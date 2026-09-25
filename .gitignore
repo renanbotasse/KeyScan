@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+secrets-report/
+.secrets-vault.json
+aws-pairs.json
+secrets-to-remove.txt
+.DS_Store
+*.log
+.idea/
+.vscode/
+.cursor/
