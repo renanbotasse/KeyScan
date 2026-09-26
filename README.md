@@ -24,7 +24,7 @@ That’s it. No install step.
 Scan a project and check if secrets look active:
 
 ```bash
-python3 keyscan.py scan-all --repo /path/to/your/project -o secrets-report --store-raw --no-alert
+python3 -m keyscan scan-all --repo /path/to/your/project -o secrets-report --store-raw --no-alert
 ```
 
 Reports appear in the `secrets-report/` folder.
@@ -36,31 +36,31 @@ Reports appear in the `secrets-report/` folder.
 ### 1. Scan current files
 
 ```bash
-python3 keyscan.py scan --repo /path/to/your/project -o secrets-report --store-raw --no-alert
+python3 -m keyscan scan --repo /path/to/your/project -o secrets-report --store-raw --no-alert
 ```
 
 ### 2. Scan git history
 
 ```bash
-python3 keyscan.py scan-history --repo /path/to/your/project --commits 500 -o secrets-report --store-raw --no-alert
+python3 -m keyscan scan-history --repo /path/to/your/project --commits 500 -o secrets-report --store-raw --no-alert
 ```
 
 ### 3. Check if secrets are still valid
 
 ```bash
-python3 keyscan.py verify-compromise -f secrets-report/secrets-report.json -o secrets-report
+python3 -m keyscan verify-compromise -f secrets-report/secrets-report.json -o secrets-report
 ```
 
 ### 4. (Optional) Block bad commits
 
 ```bash
-python3 keyscan.py install-hook --repo /path/to/your/project
+python3 -m keyscan install-hook --repo /path/to/your/project
 ```
 
 ### 5. (Optional) Add GitHub Actions
 
 ```bash
-python3 keyscan.py install-ci --repo /path/to/your/project
+python3 -m keyscan install-ci --repo /path/to/your/project
 ```
 
 Then commit the new `.github/workflows/secrets-scan.yml` file.
@@ -84,22 +84,22 @@ About **65 built-in patterns**, plus optional high-entropy detection.
 | Generic tokens | JWT, Bearer, Basic Auth, `api_key=`, `secret_key=`, `access_token=` |
 | Databases | `password=`, Mongo/Postgres/MySQL/Redis/AMQP URIs with user:pass |
 | Keys | PEM/OpenSSH/PGP/PuTTY private keys, age secret keys |
-| Other | `.env` long values, Dockerfile `ENV`/`ARG`, pip URLs with passwords, high-entropy strings |
+| Other | Dockerfile `ENV`/`ARG`, pip URLs with passwords, high-entropy strings (`--entropy`) |
 
-Also scans: `.py`, `.js/.ts`, YAML, JSON, shell, Terraform (`.tf`), Dockerfiles, `requirements*.txt`, and `.env*`.
+Also scans: `.py`, `.js/.ts`, YAML, JSON, shell, Terraform (`.tf`), Dockerfiles, `requirements*.txt`.  
+`.env` / `*.env` are **skipped by default** (local secrets belong there); use `--include-env` to scan them.
 
 ---
 
 ## What you get
 
+Only two files (plus an optional hidden vault):
+
 | File | Meaning |
 |------|---------|
-| `secrets-report/secrets-report.md` | Easy-to-read results |
-| `secrets-report/secrets-report.json` | Machine-readable results |
-| `secrets-report/history-report.md` | Secrets found in old commits |
-| `secrets-report/compromise-status.json` | Are keys still active? |
-
-Open the `.md` files first.
+| `secrets-report/report.md` | **Read this** — everything that looks wrong |
+| `secrets-report/report.json` | Same data for scripts/CI |
+| `secrets-report/.vault.json` | Only with `--store-raw` (private, for live checks) |
 
 ---
 
@@ -116,5 +116,5 @@ Open the `.md` files first.
 ## Need help?
 
 ```bash
-python3 keyscan.py --help
+python3 -m keyscan --help
 ```

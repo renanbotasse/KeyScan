@@ -1,4 +1,16 @@
-name: KeyScan
+"""GitHub Actions CI/CD workflow writer."""
+from __future__ import annotations
+
+from pathlib import Path
+
+
+class CICDIntegration:
+    @staticmethod
+    def write_workflow(repo_path: str = ".") -> Path:
+        path = Path(repo_path) / ".github" / "workflows" / "secrets-scan.yml"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            """name: KeyScan
 
 on:
   push:
@@ -32,16 +44,14 @@ jobs:
           python <<'PY'
           import json, os, pathlib, sys
           bad, lines = 0, []
-          for name in ("secrets-report.json", "history-report.json"):
-              path = pathlib.Path("secrets-report") / name
-              if not path.exists():
-                  continue
+          path = pathlib.Path("secrets-report") / "report.json"
+          if path.exists():
               for f in json.loads(path.read_text()).get("findings", []):
                   if f.get("severity") in ("CRITICAL", "HIGH"):
                       bad += 1
                       lines.append(f"- [{f['severity']}] {f['secret_type']} in {f['file_path']}")
           pathlib.Path(os.environ["GITHUB_STEP_SUMMARY"]).write_text(
-              f"## Secrets scan\nFindings CRITICAL/HIGH: {bad}\n\n" + "\n".join(lines[:50])
+              f"## KeyScan\\nFindings CRITICAL/HIGH: {bad}\\n\\n" + "\\n".join(lines[:50])
           )
           raise SystemExit(1 if bad else 0)
           PY
@@ -56,7 +66,7 @@ jobs:
               "Automated secrets scan found CRITICAL/HIGH findings.",
               "",
               `Workflow: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-            ].join("\n");
+            ].join("\\n");
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -72,3 +82,7 @@ jobs:
                 labels: ["security"],
               });
             }
+""",
+            encoding="utf-8",
+        )
+        return path

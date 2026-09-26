@@ -7,6 +7,7 @@ venv/
 .env.*
 !.env.example
 secrets-report/
+.vault.json
 .secrets-vault.json
 aws-pairs.json
 secrets-to-remove.txt
